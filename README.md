@@ -1,6 +1,6 @@
-# Starbucks Scalable Order Processing System
+# Starducks Scalable Order Processing System
 
-This project provides a scalable order processing system for a coffee shop, inspired by Starbucks. The system is built using FastAPI for handling HTTP requests, RabbitMQ or Kafka for message queuing, and PostgreSQL for inventory management.
+This project provides a scalable order processing system for a coffee shop, inspired by Starbucks. This repository contains the source code for a scalable order processing system inspired by Starbucks. The system utilizes FastAPI to handle HTTP requests, Redis for message queuing, and PostgreSQL for managing inventory.
 
 ## File Structure
 
@@ -40,8 +40,8 @@ startducks_orders/
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/starbucks_scalable.git
-   cd starbucks_scalable
+   git clone https://github.com/andreypomortsev/startducks_orders.git
+   cd startducks_orders
    ```
 
 2. Build and start the services:
