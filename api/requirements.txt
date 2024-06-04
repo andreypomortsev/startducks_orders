@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+aioredis
+asyncpg
+pydantic
+pytest
+pytest-asyncio
+httpx
