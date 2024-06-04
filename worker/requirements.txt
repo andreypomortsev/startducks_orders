@@ -1,0 +1,5 @@
+redis
+hiredis
+asyncpg
+pytest
+pytest-asyncio
