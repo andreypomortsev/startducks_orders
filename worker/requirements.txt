@@ -1,4 +1,4 @@
-pytest
-pytest-asyncio
 aioredis
 asyncpg
+pytest
+pytest-asyncio
