@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./api
+    dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DATABASE_URL=postgresql://user:password@db/mydatabase
+    volumes:
+      - ./api/tests/test_data.sql:/docker-entrypoint-initdb.d/test_data.sql
+
+  worker:
+    build:
+      context: ./worker
+    depends_on:
+      - db
+      - redis
+
+  db:
+    build:
+      context: ./database
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  tests:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.test
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DATABASE_URL=postgresql://user:password@db/mydatabase
