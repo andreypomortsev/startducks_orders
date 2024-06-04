@@ -1,4 +1,4 @@
-aioredis
+redis
 hiredis
 asyncpg
 pytest

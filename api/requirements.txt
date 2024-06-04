@@ -1,6 +1,6 @@
-fastapi
+fastapi[all]
 uvicorn
-aioredis
+redis
 asyncpg
 pydantic
 pytest

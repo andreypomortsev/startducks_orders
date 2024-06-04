@@ -1,5 +1,5 @@
 import asyncio
-import aioredis
+import redis.asyncio as redis
 import asyncpg
 import json
 
@@ -12,7 +12,6 @@ recipes = {
     "Кон Панна": {"coffee": 1, "milk": 0, "cream": 1},
 }
 
-
 async def check_ingredients(conn, ingredients: dict) -> bool:
     async with conn.transaction():
         for ingredient, quantity in ingredients.items():
@@ -24,7 +23,6 @@ async def check_ingredients(conn, ingredients: dict) -> bool:
                 return False
     return True
 
-
 async def update_stock(conn, ingredients: dict) -> None:
     async with conn.transaction():
         for ingredient, quantity in ingredients.items():
@@ -34,27 +32,23 @@ async def update_stock(conn, ingredients: dict) -> None:
                 ingredient,
             )
 
-
-async def process_order(order_data: dict, db_pool, redis):
+async def process_order(order_data: dict, db_pool, redis_conn):
     async with db_pool.acquire() as conn:
         for drink in order_data["preferences"]:
-            ingredients = recipes.get(drink, None)
+            ingredients = recipes.get(drink, False)
             if ingredients and await check_ingredients(conn, ingredients):
                 await update_stock(conn, ingredients)
-                # Optionally, update the order status in another table
                 return f"Order {order_data['order_id']}: {drink} prepared"
     return f"Order {order_data['order_id']}: No available drinks"
 
-
 async def worker():
-    redis = await aioredis.create_redis_pool("redis://redis")
+    redis_conn = redis.from_url("redis://redis")
     db_pool = await asyncpg.create_pool(dsn="postgresql://user:password@db/mydatabase")
     while True:
-        _, order_data_json = await redis.blpop("orders_queue")
-        order_data = json.loads(order_data_json)
-        result = await process_order(order_data, db_pool, redis)
+        order_data_json = await redis_conn.blpop("orders_queue")
+        order_data = json.loads(order_data_json[1])
+        result = await process_order(order_data, db_pool, redis_conn)
         print(result)  # Here you might update the order status or send a notification
-
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(worker())

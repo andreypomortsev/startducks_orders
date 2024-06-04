@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import aioredis
+import redis.asyncio as redis
 import asyncpg
 import json
 import uuid
@@ -17,21 +17,20 @@ class OrderResponse(BaseModel):
 
 
 # Initialize Redis and PostgreSQL connections
-redis = None
+redis_conn = None
 db_pool = None
 
 
-@app.event("startup")
+@app.on_event("startup")
 async def startup():
-    global redis, db_pool
-    redis = await aioredis.create_redis_pool("redis://redis")
+    global redis_conn, db_pool
+    redis_conn = redis.from_url("redis://redis")
     db_pool = await asyncpg.create_pool(dsn="postgresql://user:password@db/mydatabase")
 
 
-@app.event("shutdown")
+@app.on_event("shutdown")
 async def shutdown():
-    redis.close()
-    await redis.wait_closed()
+    await redis_conn.close()
     await db_pool.close()
 
 
@@ -39,5 +38,5 @@ async def shutdown():
 async def create_order(order_request: OrderRequest):
     order_id = str(uuid.uuid4())
     order_data = {"order_id": order_id, "preferences": order_request.preferences}
-    await redis.rpush("orders_queue", json.dumps(order_data))
+    await redis_conn.rpush("orders_queue", json.dumps(order_data))
     return OrderResponse(result=f"Order {order_id} received")
