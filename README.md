@@ -8,6 +8,7 @@ This project provides a scalable order processing system for a coffee shop, insp
 startducks_orders/
 ├── api/
 │   ├── Dockerfile
+│   ├── Dockerfile.test
 │   ├── main.py
 │   ├── requirements.txt
 │   └── tests/
@@ -15,6 +16,7 @@ startducks_orders/
 │       ├── test_main.py
 │       └── test_data.sql
 ├── worker/
+│   ├── __init__.py
 │   ├── Dockerfile
 │   ├── worker.py
 │   └── requirements.txt
@@ -22,6 +24,7 @@ startducks_orders/
 │   ├── Dockerfile
 │   └── init.sql
 ├── docker-compose.yml
+├── LICENSE
 └── README.md
 
 ```
